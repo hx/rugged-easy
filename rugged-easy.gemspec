@@ -9,9 +9,10 @@ Gem::Specification.new do |spec|
   spec.authors       = ['Neil E. Pearson']
   spec.email         = ['neil@helium.net.au']
 
-  spec.summary       = %q{TODO: Write a short summary, because Rubygems requires one.}
-  spec.description   = %q{TODO: Write a longer description or delete this line.}
+  spec.summary       = %q{Rugged the Easy Way}
+  spec.description   = %q{Use Rugged to manage Git repositories in a manner similar to using command-line git.}
   spec.homepage      = 'https://github.com/hx/rugged-easy'
+  spec.license       = 'Apache License, Version 2.0'
 
   spec.files         = `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
   spec.bindir        = 'exe'
