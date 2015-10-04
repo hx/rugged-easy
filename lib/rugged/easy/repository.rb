@@ -22,6 +22,11 @@ module Rugged
         end
       end
 
+      def init(*args)
+        @repo = Rugged::Repository.init_at @path, args.include?(:bare)
+        self
+      end
+
       private
 
       def repo
