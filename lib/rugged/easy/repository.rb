@@ -6,7 +6,8 @@ module Rugged
     class Repository
       attr_reader :path
 
-      def initialize(dir, &block)
+      def initialize(dir, **opts, &block)
+        @opts = opts
         @path = Pathname(dir)
         raise 'Supplied path is a file; expected a directory or nonexistent path.' if path.file?
         if block_given?
@@ -24,7 +25,7 @@ module Rugged
       end
 
       def init(*args)
-        @repo = Rugged::Repository.init_at path, args.include?(:bare)
+        Rugged::Repository.init_at path, args.include?(:bare)
         self
       end
 
@@ -45,10 +46,56 @@ module Rugged
         self
       end
 
-      private
+      def commit(*args)
+        symbols, strings = split_args(*args)
+        amend            = symbols.include? :amend
+        index            = repo.index
+        data             = {
+            author:     author,
+            committer:  author,
+            message:    strings.first || '',
+            update_ref: 'HEAD'
+        }
+        index.reload
+        if amend
+          data[:tree] = index.write_tree
+          repo.head.target.amend data
+        else
+          data[:parents] = []
+          unless repo.head_unborn?
+            last_commit = repo.head.target
+            # index.read_tree last_commit.tree
+            data[:parents] << last_commit
+          end
+          data[:tree] = index.write_tree
+          Rugged::Commit.create(repo, data)
+        end
+        self
+      end
+
+      # private
+
+      def author
+        {
+            name:  get_option(:user_name),
+            email: get_option(:user_email),
+            time:  Time.now
+        }
+      end
+
+      def get_option(key)
+        @opts[key] || Easy.get_option(key)
+      end
+
+      def split_args(*args, **opts)
+        symbols, strings = args.partition { |arg| arg.is_a? Symbol }
+        symbols.concat opts.keys
+        strings.concat opts.values
+        [symbols, strings]
+      end
 
       def repo
-        @repo ||= Rugged::Repository.new(path.to_s)
+        Rugged::Repository.new(path.to_s)
       end
 
     end

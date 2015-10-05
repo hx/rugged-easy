@@ -3,9 +3,10 @@
 require 'bundler/setup'
 require 'rugged/easy'
 
-def git
-  @git ||= Rugged::Easy('.')
-end
+include Rugged::Easy
+include FileUtils
+
+puts pwd
 
 require 'irb'
 IRB.start

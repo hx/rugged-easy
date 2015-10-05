@@ -39,19 +39,30 @@ Rugged::Easy.user_email = 'neil@helium.net.au'
 For a thread-safe option, use block format or a `Repository` instance:
 
 ```ruby
-git = Rugged::Easy::Repository.new('path/to/repo', user_name: 'Neil E. Pearson', user_email: 'neil@helium.net.au')
+git = Rugged::Easy::Repository.new(
+  'path/to/repo',
+  user_name:  'Neil E. Pearson', 
+  user_email: 'neil@helium.net.au'
+)
 ```
 
 ## Cheat Sheet
 
 ```ruby
+# Done:
+
 git.init
 git.init :bare
 git.add 'filename.ext'
 git.add '**/glob.*', '*.more'
+
+# Pending:
+
 git.commit 'Commit message'
 git.commit :amend
 git.commit amend: 'New message'
+git.status                                      # => {staged: {new: ['new_file'], modified: ['changed_file'], deleted: ['deleted_file']},
+                                                #   unstaged: {new: ['new_file'], modified: ['changed_file'], deleted: ['deleted_file']}}
 git.fetch
 git.fetch :origin
 git.stash :save
